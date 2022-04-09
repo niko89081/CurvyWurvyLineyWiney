@@ -1,34 +1,97 @@
 import cv2 as cv
 import numpy as np
+import math
+mid = []
+def averager(points):
+    sumX = 0
+    total = len(points[0])
+    for i in points[0]:
+        sumX += i
+    if(total):
+        return sumX//total
+    else:
+        return 0
 
-"""
-   import numpy as np
-   import cv2
+def loopingthingy(heightener, left = True):
+    for n in range(4, 10): # isnt this like a riemman's sum idk i dont pay attention in calc
+        if left:
+           x = lastX -heightener * n
+        else:
+            x = lastX + heightener * n
+        for y in range(height):
+            if (binary[y][x] == 200):
+                starty = y
+                break
+        for y in range(height):
+            if (binary[height - y][x] == 200):
+                endy = height - y
+                break
+        mids = (starty + endy) // 2
+        mid.append((x, mids))
 
-   # Read the main image
 
-   inputImage = cv2.imread("input.png")
+def splitinttwo(points, axis):
+    left = []
+    right = []
+    if axis == 'x':
+        average = averager(points)
+        for i in points[0]:
+            if i < average:
+                left.append(i)
+            else:
+                right.append(i)
+    else:
+        average = averager(points[1])
+        for i in points[0]:
+            if i < average:
+                left.append(i)
+            else:
+                right.append(i)
+    return left, right
 
-   # Convert it to grayscale
+img = cv.imread("flipedphoto2.jpg")
+scale_percent = 20
+width = int(img.shape[1] * scale_percent / 100)
+height = int(img.shape[0] * scale_percent / 100)
+dim = (width, height)
+img = cv.resize(img, dim, interpolation=cv.INTER_AREA)
+height -=50
+gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
+dst = cv.Canny(gray, 75, 300)
+blur = cv.blur(dst, (10,10))
+n = 10
+heightOfBox = height//n
 
-   inputImageGray = cv2.cvtColor(inputImage, cv2.COLOR_BGR2GRAY)
+binary = cv.threshold(blur, 50, 200, cv.THRESH_BINARY)[1]
 
-   # Line Detection
+for ididntthinkineededthis in range(7):#originally didnt think i would use that value
+    y = height-ididntthinkineededthis*heightOfBox -1 #it was giving me some sort of error with index so i just sub 1
+    left, right = splitinttwo(np.where(binary[y] == 200), "x")
+    if len(left) and len(right):
+        midX = (left[0]+right[0])//2
+    else:
+        midX= 0
+    mid.append((midX, y))
 
-   edges = cv2.Canny(inputImageGray,100,200,apertureSize = 3)
+for i in mid:
+    cv.circle(img, i, 3, (0, 0, 0), -1)
 
-   minLineLength = 500 
-   maxLineGap = 5 
+dir = mid[-2][0]-mid[-1][0]
+lastX = mid[-1][0]
+lastY = mid[-1][1]
+heightener = (width - lastX) // 10
 
-   lines = cv2.HoughLinesP(edges,1,np.pi/180,90,minLineLength,maxLineGap)
+if(dir < 0): #code for right side
+    loopingthingy(heightener, False)
+else:
+    loopingthingy(heightener, True)
 
-   for x in range(0, len(lines)):
-       for x1,y1,x2,y2 in lines[x]:
-           cv2.line(inputImage,(x1,y1),(x2,y2),(0,128,0),2)
 
-   cv2.putText(inputImage,"Tracks Detected", (500,250), font, 0.5, 255)
+curr = 0
+for i in mid:
+    if curr<len(mid)-1:
+        cv.arrowedLine(img, i, mid[curr+1], (255,0,255), 2)
+    curr+=1
 
-   # Show result
-
-   cv2.imshow("Trolley_Problem_Result", inputImage)
-"""
+cv.imshow('bruh3', img)
+cv.waitKey()
