@@ -62,7 +62,7 @@ blur = cv.blur(dst, (10,10))
 n = 10
 heightOfBox = height//n
 
-binary = cv.threshold(blur, 50, 200, cv.THRESH_BINARY)[1]
+bruhbrobruh, binary = cv.threshold(blur, 50, 200, cv.THRESH_BINARY)
 
 for ididntthinkineededthis in range(7):#originally didnt think i would use that value
     y = height-ididntthinkineededthis*heightOfBox -1 #it was giving me some sort of error with index so i just sub 1
