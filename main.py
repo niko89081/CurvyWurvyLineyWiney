@@ -18,17 +18,18 @@ def loopingthingy(heightener, left = True):
            x = lastX -heightener * n
         else:
             x = lastX + heightener * n
+        topy = 0
+        bottomy = 0
         for y in range(height):
             if (binary[y][x] == 200):
-                starty = y
+                topy = y
                 break
         for y in range(height):
             if (binary[height - y][x] == 200):
-                endy = height - y
+                bottomy = height - y
                 break
-        mids = (starty + endy) // 2
+        mids = (topy + bottomy) // 2
         mid.append((x, mids))
-
 
 def splitinttwo(points, axis):
     left = []
